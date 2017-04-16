@@ -9,8 +9,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace ContactTransformer {
    class Program {
 
-      private static List<Contact> contacts;
-      private static Dictionary<string, List<Contact>> households;
+      private static List<Household> Households;
       private static string changeExtension(string filename, string extension) {
          return Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + extension);
       }
@@ -32,19 +31,29 @@ namespace ContactTransformer {
             workbook = excel.Workbooks.Open(excelFilename, ReadOnly: true);
             Excel.Worksheet sheet = workbook.Sheets[1];
             Excel.ListObject table = sheet.ListObjects["Information_Table"];
-            contacts = new List<Contact>();
-            households = new Dictionary<string, List<Contact>>();
+            List<Contact> contacts = new List<Contact>();
             foreach (Excel.ListRow row in table.ListRows) {
                Contact c = new Contact(table.ListColumns, row);
                contacts.Add(c);
-               if (c.Address != "") {
-                  List<Contact> household;
-                  if (!households.TryGetValue(c.Address, out household)) {
-                     households[c.Address] = household = new List<Contact>();
-                  }
-                  household.Add(c);
-               }
             }
+            //households = contacts
+            //   .Where(c => c.Address != "")
+            //   .GroupBy(c => c.Address)
+            //   .Select(cg => new Household(cg.ToList()))
+            //.Union(contacts
+            //   .Where(c => c.Address == "")
+            //   .Select(c => new Household(new List<Contact>() { c }))
+            //).ToList();
+            Households = (
+               from c in contacts
+               where c.Address != ""
+               group c by c.Address into cg
+               select new Household(cg.ToList())
+           ).Concat(
+               from c in contacts
+               where c.Address == ""
+               select new Household(new List<Contact>() { c })
+           ).ToList();    
          } finally {
             if (workbook != null) {
                workbook.Close();
@@ -58,16 +67,37 @@ namespace ContactTransformer {
       private static void WriteText(string textFilename) {
          HashSet<Contact> seen = new HashSet<Contact>();
          using (TextWriter writer = new StreamWriter(textFilename, false, Encoding.UTF8)) {
-            foreach(Contact c in contacts) {
-               if (seen.Contains(c)) {
-                  continue;
+            foreach(Household h in Households) {
+               writer.WriteLine(h.Name);
+               if (h.Phone != "") {
+                  writer.WriteLine("  Phone: {0}", h.Phone);
                }
-               IEnumerable<Contact> household;
-               if (c.Address == "") {
-                  household = new Contact[] { c };
+               foreach(Contact c in h.Contacts) {
+                  if (c.CellPhone != "") {
+                     writer.WriteLine("  {0} Cell: {1}", c.First, c.CellPhone);
+                  }
+               }
+               if (h.Email != "") {
+                  writer.WriteLine("  Email: {0}", h.Email);
                } else {
-                  household = households[c.Address];
+                  foreach (Contact c in h.Contacts) {
+                     if (c.Email != "") {
+                        writer.WriteLine("  {0} Email: {1}", c.First, c.Email);
+                     }
+                  }
                }
+               foreach (Contact c in h.Contacts) {
+                  if (c.Birthday.HasValue) {
+                     writer.WriteLine("  {0} Birthday: {1:MMM d, yyyy}", c.First, c.Birthday.Value);
+                  }
+               }
+               if (h.Address != "") {
+                  writer.WriteLine("  Address:");
+                  foreach(string line in h.Address.Split('\n')) {
+                     writer.WriteLine("    {0}", line);
+                  }
+               }
+               writer.WriteLine();
             }
          }
       }
