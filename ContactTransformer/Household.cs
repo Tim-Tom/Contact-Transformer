@@ -25,6 +25,7 @@ namespace ContactTransformer {
             Name = ListJoin(contacts.Select(c => c.First + " " + c.Last).ToArray());
          }
       }
+
       private static string ListJoin(string[] parts) {
          if (parts.Length == 1) {
             return parts[0];

@@ -16,46 +16,27 @@ namespace ContactTransformer {
          return Path.Combine(Path.GetDirectoryName(filename), Path.GetFileNameWithoutExtension(filename) + extension);
       }
 
-      private static void ReadWord(string filename) {
-         Word.Application word = null;
-         Word.Document doc = null;
-         try {
-            word = new Word.Application();
-            word.Visible = false;
-            doc = word.Documents.Open(filename, ReadOnly: true);
-            foreach (Word.Paragraph p in doc.Paragraphs) {
-               Console.WriteLine("Paragraph {0}: {1}", p.ParaID, p.Range.Text);
-               Console.WriteLine("{0}", p.get_Style());
-            }
-         } finally {
-            if (doc != null) {
-               doc.Close();
-            }
-            if (word != null) {
-               word.Quit();
-            }
-         }
-      }
+      
 
       static void Main(string[] args) {
          string excelFilename = args[0];
          string textFilename = changeExtension(excelFilename, ".txt");
          string wordFilename = changeExtension(excelFilename, ".docx");
-         // ReadWord(wordFilename);
-         // return;
+         string vcardFilename = changeExtension(excelFilename, ".vcf");
          ReadExcel(excelFilename);
-         WriteText(textFilename);
-         WriteWord(wordFilename);
+         // WriteText(textFilename);
+         // WriteWord(wordFilename);
+         WriteVCard(vcardFilename);
       }
 
-      private static void ReadExcel(string excelFilename) {
+      private static void ReadExcel(string filename) {
          AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionTrapper;
          Excel.Application excel = null;
          Excel.Workbook workbook = null;
          try {
             excel = new Excel.Application();
             excel.Visible = false;
-            workbook = excel.Workbooks.Open(excelFilename, ReadOnly: true);
+            workbook = excel.Workbooks.Open(filename, ReadOnly: true);
             Excel.Worksheet sheet = workbook.Sheets[1];
             Excel.ListObject table = sheet.ListObjects["Information_Table"];
             Contacts = new List<Contact>();
@@ -80,17 +61,11 @@ namespace ContactTransformer {
                from c in Contacts
                where c.Address == ""
                select new Household(new List<Contact>() { c })
-            ).ToList();
-            Dictionary<string, List<Contact>> byFirst = Contacts
-               .GroupBy(c => c.First)
-               .ToDictionary(
-                  cg => cg.Key,
-                  cg => cg.ToList()
-               );
-            foreach(var cg in byFirst) {
-               List<Contact> group = cg.Value;
+            ).ToList(); 
+            foreach(var cg in Contacts.GroupBy(c => c.First)) {
+               List<Contact> group = cg.ToList();
                if (group.Count > 1) {
-                  foreach (Contact c in Contacts) {
+                  foreach (Contact c in group) {
                      c.ShortName = c.First + " " + c.Last.Substring(0, 1) + ".";
                   }
                } else {
@@ -107,9 +82,8 @@ namespace ContactTransformer {
          }
       }
 
-      private static void WriteText(string textFilename) {
-         HashSet<Contact> seen = new HashSet<Contact>();
-         using (TextWriter writer = new StreamWriter(textFilename, false, Encoding.UTF8)) {
+      private static void WriteText(string filename) {
+         using (TextWriter writer = new StreamWriter(filename, false, Encoding.UTF8)) {
             foreach(Household h in Households) {
                writer.WriteLine(h.Name);
                if (h.Phone != "") {
@@ -149,7 +123,7 @@ namespace ContactTransformer {
          }
       }
 
-      private static void WriteWord(string wordFilename) {
+      private static void WriteWord(string filename) {
          Word.Application word = null;
          Word.Document doc = null;
          try {
@@ -251,14 +225,21 @@ namespace ContactTransformer {
             }
          } finally {
             if (doc != null) {
-               doc.SaveAs2(FileName: wordFilename);
+               doc.SaveAs2(FileName: filename);
                doc.Close();
             }
             if (word != null) {
                word.Quit();
             }
          }
-         // throw new NotImplementedException();
+      }
+
+      private static void WriteVCard(string filename) {
+         using (TextWriter writer = new StreamWriter(filename, false, Encoding.UTF8)) {
+            foreach (Household h in Households) {
+
+            }
+         }
       }
 
       private static void UnhandledExceptionTrapper(object sender, UnhandledExceptionEventArgs eargs) {
