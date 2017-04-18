@@ -34,6 +34,9 @@ namespace ContactTransformer {
             case "Email":
                Email = ((String)c.Value ?? "").Trim();
                break;
+            case "Work Email":
+               WorkEmail = ((String)c.Value ?? "").Trim();
+               break;
             case "Address 1":
                Address1 = ((String)c.Value ?? "").Trim();
                address.Append(Address1);
@@ -41,7 +44,7 @@ namespace ContactTransformer {
             case "Address 2":
                Address2 = ((String)c.Value ?? "").Trim();
                if (Address2 != "") {
-                  address.AppendLine();
+                  address.Append('\n');
                   address.Append(Address2);
                }
                break;
@@ -53,10 +56,12 @@ namespace ContactTransformer {
       }
       public readonly string First;
       public readonly string Last;
+      public string ShortName;
       public readonly DateTime? Birthday;
       public readonly string HomePhone;
       public readonly string CellPhone;
       public readonly string Email;
+      public readonly string WorkEmail;
       public readonly string Address1;
       public readonly string Address2;
       public readonly string Address;
