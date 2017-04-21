@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace ContactTransformer {
-   class Contact {
-      public Contact(Excel.ListColumns columns, Excel.ListRow data) {
+   class ProtoContact {
+      public ProtoContact(Excel.ListColumns columns, Excel.ListRow data) {
          IEnumerator columnEnumerator = columns.GetEnumerator();
          StringBuilder address = new StringBuilder();
          foreach(Excel.Range c in data.Range) {
@@ -56,7 +56,32 @@ namespace ContactTransformer {
       }
       public readonly string First;
       public readonly string Last;
-      public string ShortName;
+      public readonly DateTime? Birthday;
+      public readonly string HomePhone;
+      public readonly string CellPhone;
+      public readonly string Email;
+      public readonly string WorkEmail;
+      public readonly string Address1;
+      public readonly string Address2;
+      public readonly string Address;
+   }
+   class Contact {
+      public Contact(ProtoContact pc, string shortName) {
+         this.First = pc.First;
+         this.Last = pc.Last;
+         this.Birthday = pc.Birthday;
+         this.HomePhone = pc.HomePhone;
+         this.CellPhone = pc.CellPhone;
+         this.Email = pc.Email;
+         this.WorkEmail = pc.WorkEmail;
+         this.Address1 = pc.Address1;
+         this.Address2 = pc.Address2;
+         this.Address = pc.Address;
+         this.ShortName = shortName;
+      }
+      public readonly string First;
+      public readonly string Last;
+      public readonly string ShortName;
       public readonly DateTime? Birthday;
       public readonly string HomePhone;
       public readonly string CellPhone;

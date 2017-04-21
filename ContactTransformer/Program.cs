@@ -40,19 +40,16 @@ namespace ContactTransformer {
             workbook = excel.Workbooks.Open(filename, ReadOnly: true);
             Excel.Worksheet sheet = workbook.Sheets[1];
             Excel.ListObject table = sheet.ListObjects["Information_Table"];
-            Contacts = new List<Contact>();
+            List<ProtoContact> contacts = new List<ProtoContact>();
             foreach (Excel.ListRow row in table.ListRows) {
-               Contact c = new Contact(table.ListColumns, row);
-               Contacts.Add(c);
+               ProtoContact c = new ProtoContact(table.ListColumns, row);
+               contacts.Add(c);
             }
-            //households = contacts
-            //   .Where(c => c.Address != "")
-            //   .GroupBy(c => c.Address)
-            //   .Select(cg => new Household(cg.ToList()))
-            //.Union(contacts
-            //   .Where(c => c.Address == "")
-            //   .Select(c => new Household(new List<Contact>() { c }))
-            //).ToList();
+            Dictionary<string, bool> multiple = contacts.GroupBy(c => c.First).ToDictionary(cg => cg.Key, cg => cg.Count() > 1);
+            Contacts = contacts.Select(c => {
+               string shortName = multiple[c.First] ? c.First + " " + c.Last.Substring(0, 1) + "." : c.First;
+               return new Contact(c, shortName);
+            }).ToList();
             Households = (
                from c in Contacts
                where c.Address != ""
@@ -62,17 +59,7 @@ namespace ContactTransformer {
                from c in Contacts
                where c.Address == ""
                select new Household(new List<Contact>() { c })
-            ).ToList(); 
-            foreach(var cg in Contacts.GroupBy(c => c.First)) {
-               List<Contact> group = cg.ToList();
-               if (group.Count > 1) {
-                  foreach (Contact c in group) {
-                     c.ShortName = c.First + " " + c.Last.Substring(0, 1) + ".";
-                  }
-               } else {
-                  group[0].ShortName = group[0].First;
-               }
-            }
+            ).ToList();
          } finally {
             if (workbook != null) {
                workbook.Close();
