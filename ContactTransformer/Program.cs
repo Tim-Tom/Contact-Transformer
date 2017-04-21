@@ -351,7 +351,7 @@ namespace ContactTransformer {
             };
                Match m = addr2Parse.Match(c.Address2);
                if (m.Success) {
-                  cc["Home Address"] = '"' + c.Address.Replace("\n", Environment.NewLine) + '"';
+                  cc["Home Address"] = c.Address1;
                   cc["Home Street"] = c.Address1;
                   cc["Home City"] = m.Groups[1].Value;
                   cc["Home State"] = m.Groups[2].Value;
@@ -364,10 +364,10 @@ namespace ContactTransformer {
                   cc["Mobile Phone"] = c.CellPhone;
                }
                if (c.Email != "") {
-                  cc["E-Mail Address"] = c.Email;
+                  cc["E-mail Address"] = c.Email;
                }
                if (c.WorkEmail != "") {
-                  cc["E-Mail Address 2"] = c.WorkEmail;
+                  cc["E-mail Address 2"] = c.WorkEmail;
                }
                if (c.Birthday.HasValue) {
                   cc["Birthday"] = String.Format("{0:yyyy-MM-dd}", c.Birthday.Value);
