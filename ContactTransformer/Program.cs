@@ -32,9 +32,8 @@ namespace ContactTransformer {
       }
 
       private static void ReadExcel(string filename) {
-         var results = ContactBuilder.ReadExcel(filename);
-         Households = results.Item1;
-         Contacts = results.Item2;
+         Contacts = ContactBuilder.ReadExcel(filename);
+         Households = ContactBuilder.CreateHouseholds(Contacts);
       }
 
       private static void WriteText(string filename) {

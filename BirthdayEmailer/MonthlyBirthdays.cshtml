@@ -1,0 +1,25 @@
+@using RazorEngine
+@using BirthdayEmailer
+@using ContactCommon
+@inherits RazorEngine.Templating.TemplateBase<BirthdayModel>
+
+<html>
+<head>
+  <title>@String.Format("{0:MMMM}", Model.Month) Birthdays</title>
+</head>
+<body>
+    <p>Hi Shaffer Clan!</p>
+    <p>Here's the upcoming birthdays for @String.Format("{0:MMMM yyyy}", Model.Month)</p>
+    <dl>
+    @foreach (Contact c in Model.Contacts) {
+        DateTime bday = c.Birthday.Value;
+        <dt>@String.Format("{0:MMM-d}", bday)</dt>
+        if (bday < Model.Month) {
+            <dd>@c.ShortName (@Model.Age(c) Years Old)</dd>
+        } else {
+            <dd>@c.ShortName</dd>
+        }
+    }
+    </dl>
+</body>
+</html>
