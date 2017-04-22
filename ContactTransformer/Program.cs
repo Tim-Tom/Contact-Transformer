@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using Excel = Microsoft.Office.Interop.Excel;
 using Word = Microsoft.Office.Interop.Word;
 using System.Text.RegularExpressions;
+
+using ContactCommon;
 
 namespace ContactTransformer {
    class Program {
@@ -18,6 +18,7 @@ namespace ContactTransformer {
       }
 
       static void Main(string[] args) {
+         AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionTrapper;
          string excelFilename = args[0];
          string textFilename = changeExtension(excelFilename, ".txt");
          string wordFilename = changeExtension(excelFilename, ".docx");
@@ -31,43 +32,9 @@ namespace ContactTransformer {
       }
 
       private static void ReadExcel(string filename) {
-         AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionTrapper;
-         Excel.Application excel = null;
-         Excel.Workbook workbook = null;
-         try {
-            excel = new Excel.Application();
-            excel.Visible = false;
-            workbook = excel.Workbooks.Open(filename, ReadOnly: true);
-            Excel.Worksheet sheet = workbook.Sheets[1];
-            Excel.ListObject table = sheet.ListObjects["Information_Table"];
-            List<ProtoContact> contacts = new List<ProtoContact>();
-            foreach (Excel.ListRow row in table.ListRows) {
-               ProtoContact c = new ProtoContact(table.ListColumns, row);
-               contacts.Add(c);
-            }
-            Dictionary<string, bool> multiple = contacts.GroupBy(c => c.First).ToDictionary(cg => cg.Key, cg => cg.Count() > 1);
-            Contacts = contacts.Select(c => {
-               string shortName = multiple[c.First] ? c.First + " " + c.Last.Substring(0, 1) + "." : c.First;
-               return new Contact(c, shortName);
-            }).ToList();
-            Households = (
-               from c in Contacts
-               where c.Address != ""
-               group c by c.Address into cg
-               select new Household(cg.ToList())
-            ).Concat(
-               from c in Contacts
-               where c.Address == ""
-               select new Household(new List<Contact>() { c })
-            ).ToList();
-         } finally {
-            if (workbook != null) {
-               workbook.Close();
-            }
-            if (excel != null) {
-               excel.Quit();
-            }
-         }
+         var results = ContactBuilder.ReadExcel(filename);
+         Households = results.Item1;
+         Contacts = results.Item2;
       }
 
       private static void WriteText(string filename) {

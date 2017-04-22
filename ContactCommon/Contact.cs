@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 using Excel = Microsoft.Office.Interop.Excel;
 
-namespace ContactTransformer {
-   class ProtoContact {
+namespace ContactCommon {
+   internal class ProtoContact {
       public ProtoContact(Excel.ListColumns columns, Excel.ListRow data) {
          IEnumerator columnEnumerator = columns.GetEnumerator();
          StringBuilder address = new StringBuilder();
@@ -65,8 +62,8 @@ namespace ContactTransformer {
       public readonly string Address2;
       public readonly string Address;
    }
-   class Contact {
-      public Contact(ProtoContact pc, string shortName) {
+   public class Contact {
+      internal Contact(ProtoContact pc, string shortName) {
          this.First = pc.First;
          this.Last = pc.Last;
          this.Birthday = pc.Birthday;

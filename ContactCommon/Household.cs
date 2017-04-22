@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ContactTransformer {
-   class Household {
-      public Household(List<Contact> contacts) {
+namespace ContactCommon {
+   public class Household {
+      internal Household(List<Contact> contacts) {
          Contact first = contacts[0];
          Contacts = contacts;
          Address = first.Address;
