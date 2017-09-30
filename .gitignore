@@ -243,3 +243,7 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+
+# These email configuration's have passwords
+/BirthdayEmailer/email-config/*.xml
+!/BirthdayEmailer/email-config/sample.xml
