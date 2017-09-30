@@ -2,20 +2,20 @@
 <config>
   <mail>
     <from>
-      <name>Shaffer Clan Birthday Service</name>
-      <address>Tim.Bollman@gmail.com</address>
+      <name>Family Clan Birthday Service</name>
+      <address>my-address@provider.com</address>
     </from>
     <to>
-      <name>Shaffer Clan</name>
-      <address>shaffer-clan@googlegroups.com</address>
+      <name>Family Clan</name>
+      <address>mail=list@provider.com</address>
     </to>
     <self>
       <name>me</name>
-      <address>Tim.Bollman@gmail.com</address>
+      <address>my-address@provider.com</address>
     </self>
   </mail>
   <authentication>
-    <account>Tim.Bollman@gmail.com</account>
+    <account>my-address@provider.com</account>
     <password>secret</password>
   </authentication>
 </config>
