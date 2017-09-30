@@ -9,7 +9,7 @@
 </head>
 <body>
     <p>Hi Shaffer Clan!</p>
-    <p>Here's the upcoming birthdays for @String.Format("{0:MMMM yyyy}", Model.Month)</p>
+    <p>Here's the upcoming birthdays for @String.Format("{0:MMMM yyyy}", Model.Month).</p>
     <dl>
     @foreach (Contact c in Model.Contacts) {
         DateTime bday = c.Birthday.Value;
@@ -21,5 +21,12 @@
         }
     }
     </dl>
+    <p>
+        Full information can be found by using one or more of the following resources<br />
+        <a href="https://1drv.ms/x/s!AlYbryv5WVB-jt8Ip19fCOyC7DqMIA">Master Excel Sheet (Edit your info here)</a> <br/>
+        <a href="https://1drv.ms/w/s!AlYbryv5WVB-jrplXLtpIJXedSb4Zg">Printable Word Document</a> <br />
+        <a href="https://1drv.ms/u/s!AlYbryv5WVB-jt8oSuOUSCx7SGBnFA">Outlook/Gmail Contacts</a> <br />
+        <a href="https://1drv.ms/u/s!AlYbryv5WVB-jt8nYnIvIiKpHD4V3w">Apple Contacts</a> <br />
+    </p>
 </body>
 </html>

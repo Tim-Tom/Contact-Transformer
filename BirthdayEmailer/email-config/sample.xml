@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<config>
+  <mail>
+    <from>
+      <name>Shaffer Clan Birthday Service</name>
+      <address>Tim.Bollman@gmail.com</address>
+    </from>
+    <to>
+      <name>Shaffer Clan</name>
+      <address>shaffer-clan@googlegroups.com</address>
+    </to>
+    <self>
+      <name>me</name>
+      <address>Tim.Bollman@gmail.com</address>
+    </self>
+  </mail>
+  <authentication>
+    <account>Tim.Bollman@gmail.com</account>
+    <password>secret</password>
+  </authentication>
+</config>
